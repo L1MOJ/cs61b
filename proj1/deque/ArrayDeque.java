@@ -11,26 +11,19 @@ public class ArrayDeque<T> implements Deque<T> {
         size = 0;
         setNext(4,5);
     }
-
+/*
     public ArrayDeque(ArrayDeque other){
         items = (T[]) new Object[8];
         size = 0;
         resize(other.size);
         int first = other.getFirstIndex();
         int last = other.getLastIndex();
-        /*if (first < last){
-            System.arraycopy(items,first,other,first,other.size);
-        }
-        else {
-            System.arraycopy(items,first,other,first,items.length-first);
-            System.arraycopy(items,0,other,0,last+1);
-        }*/
         for (int i = 0;i<items.length;i++)
         {
             items[i] =(T) other.get(i);
         }
         setNext(first-1,last+1);
-    }
+    }*/
 
     public void setNext(int f, int l){
         this.nextfirst = f;
@@ -106,7 +99,7 @@ public class ArrayDeque<T> implements Deque<T> {
     }
     @Override
     public T get(int index){
-        return items[index];
+        return items[(nextfirst + 1 + index) % items.length];
     }
 
     public void incNextFirst(){

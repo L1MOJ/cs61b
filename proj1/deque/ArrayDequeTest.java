@@ -99,26 +99,19 @@ public class ArrayDequeTest {
         }
     }
     @Test
-    /*Copy a LinkedListDeque*/
-    public void copyTest(){
-        ArrayDeque<Integer> q = new ArrayDeque<>();
-        q.addLast(1);
-        q.addLast(3);
-        q.addLast(9);
-        q.addFirst(7);
-        ArrayDeque<Integer> p =new ArrayDeque<>(q);
-        for (int i = 0; i<q.size();i++){
-            assertEquals(p.get(i), q.get(i));
-        }
-    }
-
-    @Test
     /*Add Get Test*/
     public void addGetTest(){
         ArrayDeque<Integer> q = new ArrayDeque<>();
         assertEquals(null,q.get(0));
         q.addFirst(0);
-        int x = q.get(0);
+        q.addFirst(5);
+        q.addFirst(2);
+        q.addFirst(1);
+        q.addFirst(0);
+        int x =q.get(0);
         assertEquals(0,x);
+        q.removeFirst();
+        x = q.get(0);
+        assertEquals(1,x);
     }
 }
