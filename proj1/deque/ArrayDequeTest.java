@@ -114,4 +114,16 @@ public class ArrayDequeTest {
         x = q.get(0);
         assertEquals(1,x);
     }
+    @Test
+    public void checkResizeTest() {
+        ArrayDeque<Integer> lld1 = new ArrayDeque<>();
+        for (int N = 64; N <= 64; N = N * N) {
+            for (int i = 1; i <= N; i++) {
+                lld1.addLast(i);
+            }
+            for (int i = N; i >= 1; i--) {
+                lld1.removeLast();
+            }
+        }
+    }
 }
