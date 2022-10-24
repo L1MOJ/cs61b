@@ -111,4 +111,14 @@ public class ArrayDequeTest {
             assertEquals(p.get(i), q.get(i));
         }
     }
+
+    @Test
+    /*Add Get Test*/
+    public void addGetTest(){
+        ArrayDeque<Integer> q = new ArrayDeque<>();
+        assertEquals(null,q.get(0));
+        q.addFirst(0);
+        int x = q.get(0);
+        assertEquals(0,x);
+    }
 }

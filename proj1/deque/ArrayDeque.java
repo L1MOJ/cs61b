@@ -36,6 +36,7 @@ public class ArrayDeque<T> implements Deque<T> {
         this.nextfirst = f;
         this.nextlast = l;
     }
+    @Override
     public void addFirst(T item){
         if (size == items.length){
             resize(size*2);
@@ -44,7 +45,7 @@ public class ArrayDeque<T> implements Deque<T> {
         decNextFirst();
         size += 1;
     }
-
+    @Override
     public void addLast(T item){
         if (size == items.length){
             resize(size*2);
@@ -53,11 +54,11 @@ public class ArrayDeque<T> implements Deque<T> {
         incNextLast();
         size += 1;
     }
-
+    @Override
     public int size(){
         return size;
     }
-
+    @Override
     public void printDeque(){
         for (int i = getFirstIndex();i<=getLastIndex();i++){
             System.out.print(items[i] + " ");
@@ -65,6 +66,7 @@ public class ArrayDeque<T> implements Deque<T> {
         System.out.println();
     }
 
+    @Override
     public T removeFirst(){
         if (size == 0 ){
             return null;
@@ -76,7 +78,7 @@ public class ArrayDeque<T> implements Deque<T> {
         size -= 1;
         return x;
     }
-
+    @Override
     public T removeLast(){
         if (size == 0){
             return null;
@@ -102,6 +104,7 @@ public class ArrayDeque<T> implements Deque<T> {
     public int getLastIndex(){
         return (nextlast-1+items.length)%items.length;
     }
+    @Override
     public T get(int index){
         return items[index];
     }
