@@ -14,7 +14,7 @@ public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
         setNext(4, 5);
     }
 
-    public void setNext(int f, int l) {
+    private void setNext(int f, int l) {
         this.nextfirst = f;
         this.nextlast = l;
     }
@@ -78,19 +78,19 @@ public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
         return x;
     }
 
-    public T getFirst() {
+    private T getFirst() {
         return items[getFirstIndex()];
     }
 
-    public int getFirstIndex() {
+    private int getFirstIndex() {
         return (nextfirst + 1) % items.length;
     }
 
-    public T getLast() {
+    private T getLast() {
         return items[getLastIndex()];
     }
 
-    public int getLastIndex() {
+    private int getLastIndex() {
         return (nextlast - 1 + items.length) % items.length;
     }
 
@@ -99,23 +99,23 @@ public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
         return items[(nextfirst + 1 + index) % items.length];
     }
 
-    public void incNextFirst() {
+    private void incNextFirst() {
         nextfirst = (nextfirst + 1) % items.length;
     }
 
-    public void decNextFirst() {
+    private void decNextFirst() {
         nextfirst = (nextfirst - 1 + items.length) % items.length;
     }
 
-    public void incNextLast() {
+    private void incNextLast() {
         nextlast = (nextlast + 1) % items.length;
     }
 
-    public void decNextLast() {
+    private void decNextLast() {
         nextlast = (nextlast - 1 + items.length) % items.length;
     }
 
-    public void resize(int capacity) {
+    private void resize(int capacity) {
         T[] a = (T[]) new Object[capacity];
         int first = getFirstIndex();
         int last = getLastIndex();
@@ -138,7 +138,7 @@ public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
 
         private int wizPos;
 
-        public ArrayDqIterator() {
+        ArrayDqIterator() {
             wizPos = 0;
         }
         @Override
@@ -159,7 +159,7 @@ public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
         if (this == o) {
             return true;
         }
-        if (o ==null) {
+        if (o == null) {
             return false;
         }
         if (!(o instanceof Deque)) {

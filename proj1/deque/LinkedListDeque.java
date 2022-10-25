@@ -8,19 +8,19 @@ public class LinkedListDeque<T> implements Deque<T>, Iterable<T> {
 
 
 
-    public class Node {
-        public T item;
-        public Node prev;
-        public Node next;
-        public Node(T i , Node p,Node n) {
+    private class Node {
+        T item;
+        Node prev;
+        Node next;
+        Node(T i, Node p, Node n) {
             item = i;
             prev = p;
             next = n;
         }
     }
 
-    public  LinkedListDeque() {
-        sentinel = new Node(null,null,null);
+    LinkedListDeque() {
+        sentinel = new Node(null, null, null);
         sentinel.next = sentinel;
         sentinel.prev = sentinel;
         size = 0;
@@ -28,28 +28,21 @@ public class LinkedListDeque<T> implements Deque<T>, Iterable<T> {
     }
 
     public  LinkedListDeque(LinkedListDeque other) {
-        sentinel = new Node(null,null,null);
+        sentinel = new Node(null, null, null);
         sentinel.next = sentinel;
         sentinel.prev = sentinel;
         size = 0;
         Node nextNode = other.sentinel.next;
-        while (this.size < other.size){
+        while (this.size < other.size) {
             this.addLast(nextNode.item);
             nextNode = nextNode.next;
         }
     }
 
-    public void LinkedListDequeHelper(Node origin, Node provide,int size, int cnt) {
-        if (size == cnt) {
-            origin.next = sentinel;
-            sentinel.prev = origin;
-            origin.item = provide.item;
-        }
-    }
     @Override
     public void addFirst(T item) {
         Node prevFisrt = sentinel.next;
-        Node newFirst = new Node(item,sentinel,prevFisrt);
+        Node newFirst = new Node(item, sentinel, prevFisrt);
         prevFisrt.prev = newFirst;
         sentinel.next = newFirst;
         size += 1;
@@ -58,13 +51,13 @@ public class LinkedListDeque<T> implements Deque<T>, Iterable<T> {
     //Adds an item of type T to the back of the deque.
     public void addLast(T item) {
         Node prevLast = sentinel.prev;
-        Node newLast = new Node(item,prevLast,sentinel);
+        Node newLast = new Node(item, prevLast, sentinel);
         prevLast.next = newLast;
         sentinel.prev = newLast;
         size += 1;
     }
     @Override
-    public int size(){
+    public int size() {
         return size;
     }
 
@@ -72,7 +65,7 @@ public class LinkedListDeque<T> implements Deque<T>, Iterable<T> {
     public void printDeque() {
         Node p = sentinel.next;
         while (p != sentinel) {
-            System.out.print(p.item+" ");
+            System.out.print(p.item + " ");
             p = p.next;
         }
         System.out.println();
@@ -80,7 +73,7 @@ public class LinkedListDeque<T> implements Deque<T>, Iterable<T> {
 
     @Override
     public T removeFirst() {
-        if(sentinel.next == sentinel) {
+        if (sentinel.next == sentinel) {
             return null;
         }
         Node prevFirst = sentinel.next;
@@ -121,14 +114,14 @@ public class LinkedListDeque<T> implements Deque<T>, Iterable<T> {
         return getRecursiveHelper(index, sentinel.next);
     }
 
-    public T getRecursiveHelper(int index, Node p) {
+    private T getRecursiveHelper(int index, Node p) {
         if (p == sentinel) {
             return null;
         }
         if (index == 0) {
             return p.item;
         }
-        return getRecursiveHelper(index-1,p.next);
+        return getRecursiveHelper(index - 1, p.next);
     }
     @Override
     public Iterator<T> iterator() {
@@ -139,7 +132,7 @@ public class LinkedListDeque<T> implements Deque<T>, Iterable<T> {
 
         private Node wizPos;
 
-        public LLDqIterator() {
+        LLDqIterator() {
             wizPos = sentinel.next;
         }
 
@@ -158,13 +151,13 @@ public class LinkedListDeque<T> implements Deque<T>, Iterable<T> {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o){
+        if (this == o) {
             return true;
         }
-        if (o == null){
+        if (o == null) {
             return false;
         }
-        if (!(o instanceof Deque)){
+        if (!(o instanceof Deque)) {
             return false;
         }
         Deque<T> other = (Deque<T>) o;
