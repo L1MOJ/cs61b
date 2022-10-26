@@ -57,6 +57,9 @@ public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
         if (size == 0) {
             return null;
         }
+        if (size * 2 < items.length) {
+            resize(size + 5);
+        }
         T x = getFirst();
         int ind = getFirstIndex();
         items[ind] = null;
@@ -69,6 +72,9 @@ public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
     public T removeLast() {
         if (size == 0) {
             return null;
+        }
+        if (size * 2 < items.length) {
+            resize(size + 5);
         }
         T x = getLast();
         int ind = getLastIndex();
@@ -148,7 +154,7 @@ public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
 
         @Override
         public T next() {
-            T returnItem = items[wizPos];
+            T returnItem = get(wizPos);
             wizPos += 1;
             return returnItem;
         }
