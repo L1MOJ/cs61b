@@ -3,10 +3,6 @@ package deque;
 import java.util.Iterator;
 
 public class LinkedListDeque<T> implements Deque<T>, Iterable<T> {
-    private Node sentinel;
-    private int size;
-
-
 
     private class Node {
         T item;
@@ -18,8 +14,9 @@ public class LinkedListDeque<T> implements Deque<T>, Iterable<T> {
             next = n;
         }
     }
-
-    LinkedListDeque() {
+    private Node sentinel;
+    private int size;
+    public LinkedListDeque() {
         sentinel = new Node(null, null, null);
         sentinel.next = sentinel;
         sentinel.prev = sentinel;
