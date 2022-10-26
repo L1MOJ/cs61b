@@ -132,8 +132,8 @@ public class LinkedListDequeTest {
 
     }
 
-    @Test
-    /*Copy a LinkedListDeque*/
+/*    @Test
+    *//*Copy a LinkedListDeque*//*
     public void copyTest(){
         LinkedListDeque<Integer> q = new LinkedListDeque<>();
         q.addLast(1);
@@ -144,5 +144,5 @@ public class LinkedListDequeTest {
         for (int i = 0; i<q.size();i++){
             assertEquals(p.get(i), q.get(i));
         }
-    }
+    }*/
 }
