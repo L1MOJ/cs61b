@@ -1,10 +1,12 @@
 package gh2;
 import deque.Deque;
 import deque.ArrayDeque;
+import deque.LinkedListDeque;
 // TODO: uncomment the following import once you're ready to start this portion
 // TODO: maybe more imports
 //Note: This file will not compile until you complete the Deque implementations
 public class GuitarString {
+
     /** Constants. Do not change. In case you're curious, the keyword final
      * means the values cannot be changed at runtime. We'll discuss this and
      * other topics in lecture on Friday. */
