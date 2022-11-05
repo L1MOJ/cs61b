@@ -3,6 +3,8 @@ package capers;
 
 
 import java.io.File;
+import java.io.IOException;
+
 import static capers.Utils.*;
 
 /** A repository for Capers 
@@ -35,17 +37,20 @@ public class CapersRepository {
     public static void setupPersistence() {
         // TODO
         File story = Utils.join(CAPERS_FOLDER, "story");
-        if (!CAPERS_FOLDER.exists()) {
-            CAPERS_FOLDER.mkdir();
-        }
-        if (Dog.DOG_FOLDER.exists()) {
-            Dog.DOG_FOLDER.mkdir();
-        }
-        if (!story.exists()) {
-            story.mkdir();
+        try {
+            if (!CAPERS_FOLDER.exists()) {
+                CAPERS_FOLDER.mkdir();
+            }
+            if (!story.exists()) {
+                story.createNewFile();
+            }
+            if (!Dog.DOG_FOLDER.exists()) {
+                Dog.DOG_FOLDER.mkdir();
+            }
+        } catch (IOException excp) {
+            System.out.println(excp.getMessage());
         }
     }
-
     /**
      * Appends the first non-command argument in args
      * to a file called `story` in the .capers directory.
