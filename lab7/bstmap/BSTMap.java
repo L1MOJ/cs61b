@@ -46,9 +46,6 @@ public class BSTMap<K extends Comparable<K>, V> implements Map61B<K,V>{
     /* Returns true if this map contains a mapping for the specified key. */
     @Override
     public boolean containsKey(K key) {
-        if (key == null) {
-            throw new IllegalAccessException("argument to containsKey() is null");
-        }
         return get(root,key) != null;
     }
 
@@ -73,9 +70,6 @@ public class BSTMap<K extends Comparable<K>, V> implements Map61B<K,V>{
      */
     @Override
     public V get(K key) {
-        if (key == null) {
-            throw new IllegalAccessException("argument to get() is null");
-        }
         Node node = get(root,key);
         return node==null ? null : node.val;
     }
@@ -89,9 +83,7 @@ public class BSTMap<K extends Comparable<K>, V> implements Map61B<K,V>{
     /* Associates the specified value with the specified key in this map. */
     @Override
     public void put(K key, V value) {
-        if (key == null) {
-            throw new IllegalAccessException("argument to get() is null");
-        }
+
         root = put(root, key, value);
     }
     private Node put(Node node, K key, V val) {
