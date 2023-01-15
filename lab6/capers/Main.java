@@ -41,12 +41,11 @@ public class Main {
         if (args.length == 0) {
             Utils.exitWithError("Must have at least one argument");
         }
-        System.out.println("args: " + Arrays.toString(args));
+
+//        System.out.println("args: " + Arrays.toString(args));
+
         CapersRepository.setupPersistence();
         String text;
-        String name;
-        String breed;
-        int age;
         switch (args[0]) {
         case "story":
             /* This call has been handled for you. The rest will be similar. */
@@ -56,15 +55,13 @@ public class Main {
             break;
         case "dog":
             validateNumArgs("dog", args, 4);
-            name = args[1];
-            breed = args[2];
-            age = Integer.parseInt(args[3]);
-            CapersRepository.makeDog(name,breed,age);
+            // TODO: make a dog
+            CapersRepository.makeDog(args[1],args[2],Integer.parseInt(args[3]));
             break;
         case "birthday":
             validateNumArgs("birthday", args, 2);
-            name = args[1];
-            CapersRepository.celebrateBirthday(name);
+            // TODO: celebrate this dog's birthday
+            CapersRepository.celebrateBirthday(args[1]);
             break;
         default:
             exitWithError(String.format("Unknown command: %s", args[0]));
