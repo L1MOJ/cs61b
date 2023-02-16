@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.TreeMap;
 import java.io.IOException;
 import java.util.Scanner;
-import edu.princeton.cs.algs4.Stopwatch;
+import bstmap.Stopwatch;
 
 /** Performs a timing test on three different set implementations.
  *  @author Josh Hug
@@ -47,7 +47,7 @@ public class InsertRandomSpeedTest {
         String s = "cat";
         for (int i = 0; i < N; i++) {
             s = StringUtils.randomString(L);
-            map61B.put(s, new Integer(i));
+            map61B.put(s, Integer.valueOf(i));
         }
         return sw.elapsedTime();
     }
@@ -59,7 +59,7 @@ public class InsertRandomSpeedTest {
         String s = "cat";
         for (int i = 0; i < N; i++) {
             s = StringUtils.randomString(L);
-            treeMap.put(s, new Integer(i));
+            treeMap.put(s, Integer.valueOf(i));
         }
         return sw.elapsedTime();
     }
@@ -71,7 +71,7 @@ public class InsertRandomSpeedTest {
         String s = "cat";
         for (int i = 0; i < N; i++) {
             s = StringUtils.randomString(L);
-            treeMap.put(s, new Integer(i));
+            treeMap.put(s, Integer.valueOf(i));
         }
         return sw.elapsedTime();
     }

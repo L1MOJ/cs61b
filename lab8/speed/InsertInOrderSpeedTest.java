@@ -3,7 +3,7 @@ package speed;
 import java.util.HashMap;
 import java.io.IOException;
 import java.util.Scanner;
-import edu.princeton.cs.algs4.Stopwatch;
+import speed.Stopwatch;
 
 import hashmap.Map61B;
 import hashmap.ULLMap;
@@ -59,7 +59,7 @@ public class InsertInOrderSpeedTest {
         String s = "cat";
         for (int i = 0; i < N; i++) {
             s = StringUtils.nextString(s);
-            map61B.put(s, new Integer(i));
+            map61B.put(s, Integer.valueOf(i));
         }
         return sw.elapsedTime();
     }
@@ -72,7 +72,7 @@ public class InsertInOrderSpeedTest {
         String s = "cat";
         for (int i = 0; i < N; i++) {
             s = StringUtils.nextString(s);
-            ts.put(s, new Integer(i));
+            ts.put(s,Integer.valueOf(i));
         }
         return sw.elapsedTime();
     }

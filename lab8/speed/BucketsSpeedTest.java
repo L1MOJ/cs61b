@@ -1,6 +1,5 @@
 package speed;
 
-import edu.princeton.cs.algs4.Stopwatch;
 
 import java.io.IOException;
 import java.util.Scanner;
@@ -58,7 +57,7 @@ public class BucketsSpeedTest {
         String s = "cat";
         for (int i = 0; i < N; i++) {
             s = StringUtils.randomString(L);
-            map61B.put(s, new Integer(i));
+            map61B.put(s,Integer.valueOf(i));
         }
         return sw.elapsedTime();
     }
@@ -113,3 +112,5 @@ public class BucketsSpeedTest {
         System.out.print("Please enter a positive integer: ");
     }
 }
+
+

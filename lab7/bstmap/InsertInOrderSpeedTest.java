@@ -5,7 +5,7 @@ import java.util.TreeMap;
 import java.io.IOException;
 import java.util.Scanner;
 
-import edu.princeton.cs.algs4.Stopwatch;
+import bstmap.Stopwatch;
 
 /**
  * Performs a timing test on three different set implementations.
@@ -51,7 +51,7 @@ public class InsertInOrderSpeedTest {
         String s = "cat";
         for (int i = 0; i < N; i++) {
             s = StringUtils.nextString(s);
-            map61B.put(s, new Integer(i));
+            map61B.put(s, Integer.valueOf(i));
         }
         return sw.elapsedTime();
     }
