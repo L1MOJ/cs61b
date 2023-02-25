@@ -24,6 +24,18 @@ public class Repository {
     public static final File CWD = new File(System.getProperty("user.dir"));
     /** The .gitlet directory. */
     public static final File GITLET_DIR = join(CWD, ".gitlet");
-
+    /** The objects file uner .gitlet storing blobs and commits. */
+    public static final File OBJ_DIR = join(GITLET_DIR,"objects");
     /* TODO: fill in the rest of this class. */
+    public static boolean setupPersistence() {
+        if(GITLET_DIR.exists()) {
+            System.out.println("A Gitlet version-control system already exists in the current directory.");
+            return false;
+        }
+        else {
+            GITLET_DIR.mkdir();
+            OBJ_DIR.mkdir();
+            return true;
+        }
+    }
 }
