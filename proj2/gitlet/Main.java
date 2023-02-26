@@ -22,18 +22,32 @@ public class Main {
         switch(firstArg) {
             case "init":
                 // TODO: handle the `init` command
-                if(Repository.setupPersistence()) {
-                    Commit initialCommit = new Commit();
-                    initialCommit.setMessage("initial commit");
-                    initialCommit.setCurrentTime(new Date(0));
-                    initialCommit.setCommitId();
-                    initialCommit.saveCommit();
-                }
+                Repository.init();
                 break;
             case "add":
                 // TODO: handle the `add [filename]` command
+                Repository.add(args[1]);
                 break;
             // TODO: FILL THE REST IN
+            case "commit":
+                Repository.commit(args[1]);
+                break;
+            case "rm":
+                Repository.remove(args[1]);
+                break;
+            case "log":
+                Repository.log();
+                break;
+            case "global-log":
+                Repository.glog();
+                break;
+            case "find":
+                Repository.find(args[1]);
+                break;
+            case "status":
+                Repository.status();
+                break;
+
         }
     }
 }

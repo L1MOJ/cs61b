@@ -180,7 +180,13 @@ class Utils {
             return Arrays.asList(files);
         }
     }
-
+    /**
+     * Exit with error message
+     */
+    static void exitWithMessage(String message) {
+        System.out.println(message);
+        System.exit(0);
+    }
     /** Returns a list of the names of all plain files in the directory DIR, in
      *  lexicographic order as Java Strings.  Returns null if DIR does
      *  not denote a directory. */
