@@ -294,4 +294,101 @@ public class Repository {
         Collections.sort(untracked);
         return untracked;
     }
+
+    public static void checkout(String[] args) {
+        //checkout --[file name]
+        if (args.length == 3) {
+            if (!args[1].equals("--")) {
+                Utils.exitWithMessage("Invalid command.");
+            }
+            String fileName = args[2];
+            checkoutFile(Branch.getCommitId(Head.getCurrentBranch()), fileName);
+        }
+        //checkout [commit id] --[file name]
+        if (args.length == 4) {
+            if (!args[2].equals("--")) {
+                Utils.exitWithMessage("Invalid command.");
+            }
+            String fileName = args[3];
+            String commitId = args[1];
+            checkoutFile(commitId, fileName);
+        }
+        //checkout [branchname]
+        if (args.length == 2) {
+            String branchName = args[1];
+            checkoutBranch(branchName);
+        }
+    }
+    //checkout file helper method
+    private static void checkoutFile(String commitId, String fileName) {
+        //commitId error
+        if (!Utils.plainFilenamesIn(Commit.COMMIT_DIR).contains(commitId)) {
+            Utils.exitWithMessage("No commit with that id exists.");
+        }
+        //fileName doesn't exist
+        if (!Commit.getCommit(commitId).getBlobs().containsKey(fileName)) {
+            Utils.exitWithMessage("File does not exist in that commit.");
+        }
+        File checkBlob = Utils.join(Blob.BLOB_DIR,Commit.getCommit(commitId).getBlobs().get(fileName));
+        Blob blob = Utils.readObject(checkBlob,Blob.class);
+        Utils.writeContents(Utils.join(CWD,fileName),blob.getFileContent());
+    }
+    //checkout branch helper method
+    private static void checkoutBranch(String branchName) {
+        //Same branch checkout
+        if (branchName == Head.getCurrentBranch()) {
+            Utils.exitWithMessage("No need to checkout the current branch.");
+        }
+        //Invalid branchName
+        Commit commit = Commit.getCommit(Branch.getCommitId(branchName));
+        if (commit == null) {
+            Utils.exitWithMessage("No such branch exists.");
+        }
+        //Delete files that is not tracked by newBranch
+        for (String fileName : Utils.plainFilenamesIn(CWD)) {
+            File file = Utils.join(CWD,fileName);
+            if (!commit.getBlobs().containsKey(fileName)) {
+                file.delete();
+            }
+        }
+        //tracked by B but not by A, but already exists in CWD
+        for (String fileName : Utils.plainFilenamesIn(CWD)) {
+            boolean fileTrackByA = Commit.getCommit(Branch.getCommitId(Head.getCurrentBranch())).getBlobs().containsKey(fileName);
+            boolean fileTrackByB = commit.getBlobs().containsKey(fileName);
+            if (fileTrackByB && !fileTrackByA) {
+                Utils.exitWithMessage("There is an untracked file in the way;delete it, or add and commit it first.");
+            }
+        }
+        //Update files trakced by B
+        for (String fileName : commit.getBlobs().keySet()) {
+            checkoutFile(commit.getCommitId(), fileName);
+        }
+        //Set HEAD Pointer to the branch
+        Head.setCurrentBranch(branchName);
+        //Clear stage
+        Stage stage = Stage.load();
+        stage.clear();
+        stage.save();
+    }
+
+    public static void branch(String branchName) {
+        if (branchName.equals(Head.getCurrentBranch())) {
+            Utils.exitWithMessage("A branch with that name already exists");
+        }
+        Branch.setCommitId(branchName,Branch.getCommitId(Head.getCurrentBranch()));
+        Head.setCurrentBranch(branchName);
+    }
+
+    public static void rmBranch(String branchName) {
+        if (branchName.equals(Head.getCurrentBranch())) {
+            Utils.exitWithMessage("Cannot remove the current branch.");
+        }
+        for (String branch : Utils.plainFilenamesIn(Branch.BRANCH_DIR)) {
+            if (branchName.equals(branch)) {
+                File branchFile = Utils.join(Branch.BRANCH_DIR,branchName);
+                branchFile.delete();
+            }
+        }
+        Utils.exitWithMessage("A branch with that name does not exist.");
+    }
 }
