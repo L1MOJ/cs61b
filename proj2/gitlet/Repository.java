@@ -53,7 +53,6 @@ public class Repository {
 
     public static void add(String fileName) {
         Stage stage = Stage.load();
-        System.out.println("add "+stage.getAdditionBlobs());
         File newFileName = Utils.join(CWD,fileName);
         if (!newFileName.exists()) {
             Utils.exitWithMessage("File does not exist.");
@@ -75,8 +74,6 @@ public class Repository {
             stage.removeRemovalBlob(fileName);
         }
         stage.stageBlob(newBlob);
-        System.out.println("add "+stage.getAdditionBlobs());
-        System.out.println("remove" + stage.getRemovalBlobs());
         stage.save();
         newBlob.save();
     }
@@ -336,7 +333,7 @@ public class Repository {
     //checkout branch helper method
     private static void checkoutBranch(String branchName) {
         //Same branch checkout
-        if (branchName == Head.getCurrentBranch()) {
+        if (branchName.equals(Head.getCurrentBranch())) {
             Utils.exitWithMessage("No need to checkout the current branch.");
         }
         //Invalid branchName
@@ -344,6 +341,13 @@ public class Repository {
         if (commit == null) {
             Utils.exitWithMessage("No such branch exists.");
         }
+        checkoutCommit(commit);
+        //Set HEAD Pointer to the branch
+        Head.setCurrentBranch(branchName);
+
+    }
+
+    private static void checkoutCommit(Commit commit) {
         //Delete files that is not tracked by newBranch
         for (String fileName : Utils.plainFilenamesIn(CWD)) {
             File file = Utils.join(CWD,fileName);
@@ -363,8 +367,6 @@ public class Repository {
         for (String fileName : commit.getBlobs().keySet()) {
             checkoutFile(commit.getCommitId(), fileName);
         }
-        //Set HEAD Pointer to the branch
-        Head.setCurrentBranch(branchName);
         //Clear stage
         Stage stage = Stage.load();
         stage.clear();
@@ -372,7 +374,7 @@ public class Repository {
     }
 
     public static void branch(String branchName) {
-        if (branchName.equals(Head.getCurrentBranch())) {
+        if (Utils.plainFilenamesIn(Branch.BRANCH_DIR).contains(branchName)) {
             Utils.exitWithMessage("A branch with that name already exists");
         }
         Branch.setCommitId(branchName,Branch.getCommitId(Head.getCurrentBranch()));
@@ -390,5 +392,84 @@ public class Repository {
             }
         }
         Utils.exitWithMessage("A branch with that name does not exist.");
+    }
+
+    public static void reset(String commitId) {
+        Commit commit = Commit.getCommit(commitId);
+        if (commit == null) {
+            Utils.exitWithMessage("No commit with that id exists.");
+        }
+        checkoutCommit(commit);
+        Branch.setCommitId(Head.getCurrentBranch(),commitId);
+    }
+
+    public static void merge(String branchName) {
+        Stage stage = Stage.load();
+        if (!stage.getAdditionBlobs().isEmpty() || !stage.getRemovalBlobs().isEmpty()) {
+            Utils.exitWithMessage("You have uncommitted changes.");
+        }
+        String mergedCommitId = Branch.getCommitId(branchName);
+        String currentCommitId = Branch.getCommitId(Head.getCurrentBranch());
+        if (mergedCommitId == null) {
+            Utils.exitWithMessage("A branch with that name does not exist.");
+        }
+        Commit mergedCommit = Commit.getCommit(mergedCommitId);
+        Commit currentCommit = Commit.getCommit(currentCommitId);
+
+        if (mergedCommitId.equals(currentCommitId)) {
+            Utils.exitWithMessage("Cannot merge a branch with itself.");
+        }
+
+        //???Maybe error
+        for (String fileName : Utils.plainFilenamesIn(CWD)) {
+            boolean fileTrackByA = currentCommit.getBlobs().containsKey(fileName);
+            boolean fileTrackByB = mergedCommit.getBlobs().containsKey(fileName);
+            if (fileTrackByB && !fileTrackByA) {
+                Utils.exitWithMessage("There is an untracked file in the way;delete it, or add and commit it first.");
+            }
+        }
+        //Find split point
+        String splitPointCommitId = getSplitPoint(currentCommit,mergedCommit);
+
+        if (splitPointCommitId.equals(mergedCommitId)) {
+            Utils.exitWithMessage("Given branch is an ancestor of the current branch.");
+        }
+
+        if (splitPointCommitId.equals(currentCommitId)) {
+            checkoutCommit(mergedCommit);
+            Branch.setCommitId(Head.getCurrentBranch(),mergedCommitId);
+            Utils.exitWithMessage("Current branch fast-forward.");
+        }
+
+        Commit splitCommit = Commit.getCommit(splitPointCommitId);
+        boolean isConflict = merging(currentCommit,mergedCommit,splitCommit,stage);
+    }
+
+    //Helper method for concrete merging process
+    private static boolean merging(Commit currentCommit,Commit mergedCommit,Commit splitCommit,Stage stage) {
+        boolean isConflict = false;
+    }
+    //Helper method to get splitpoint
+    private static String getSplitPoint(Commit currentCommit, Commit mergedCommit) {
+        Deque<String> currentStack = new LinkedList<>();
+        Deque<String> mergedStack = new LinkedList<>();
+        Commit tempCommit = currentCommit;
+        String tempCommitId = "";
+        //Won't push Init Commit Id but that's OK?
+        while (!tempCommit.getParents().isEmpty()) {
+            currentStack.push(tempCommit.getCommitId());
+            tempCommit = Commit.getCommit(tempCommit.getParents().get(0));
+        }
+        tempCommit = mergedCommit;
+        while (!tempCommit.getParents().isEmpty()) {
+            mergedStack.push(tempCommit.getCommitId());
+            tempCommit = Commit.getCommit(tempCommit.getParents().get(0));
+        }
+        while (currentStack.peek().equals(mergedStack.peek())) {
+            tempCommitId = currentStack.peek();
+            currentStack.pop();
+            mergedStack.pop();
+        }
+        return tempCommitId;
     }
 }
