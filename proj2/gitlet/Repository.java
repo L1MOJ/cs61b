@@ -195,18 +195,22 @@ public class Repository {
     }
 
     public static void status() {
+        Commit currentCommit = Commit.getCommit(Branch.getCommitId(Head.getCurrentBranch()));
+        Stage stage = Stage.load();
+        List<String> cwdFiles = Utils.plainFilenamesIn(CWD);
+
         System.out.println("=== Branches ===");
-        for(String branchName : Utils.plainFilenamesIn(Branch.BRANCH_DIR)) {
-            if (branchName.equals(Head.getCurrentBranch())) {
-                System.out.println("*" + branchName);
-            }
-            else {
+        List<String> branches = Utils.plainFilenamesIn(Branch.BRANCH_DIR);
+        Collections.sort(branches);
+        System.out.println("*" + Head.getCurrentBranch());
+        for(String branchName : branches) {
+            if (!branchName.equals(Head.getCurrentBranch())) {
                 System.out.println(branchName);
             }
         }
         System.out.println();
         System.out.println();
-        Stage stage = Stage.load();
+
         System.out.println("=== Staged Files ===");
         for (Map.Entry<String,String> entry : stage.getAdditionBlobs().entrySet()) {
             String fileName = entry.getKey();
@@ -214,17 +218,80 @@ public class Repository {
         }
         System.out.println();
         System.out.println();
+
         System.out.println("=== Removed Files ===");
         for (String fileName : stage.getRemovalBlobs()) {
             System.out.println(fileName);
         }
         System.out.println();
         System.out.println();
+
         System.out.println("=== Modification Not Staged For Commit ===");
+        List<String> mnsFile = getMnsFile(stage, currentCommit, cwdFiles);
+        for (String fileName : mnsFile) {
+            System.out.println(fileName);
+        }
         System.out.println();
         System.out.println();
+
         System.out.println("=== Untracked Files ===");
+        List<String> untrackedFiles = getUntrackedFiles(stage, currentCommit, cwdFiles);
+        for (String fileName : untrackedFiles) {
+            System.out.println(fileName);
+        }
         System.out.println();
         System.out.println();
+    }
+    //Helper method for status-getMnsFiles
+    private static List<String> getMnsFile(Stage stage, Commit currentCommit, List<String> cwdFiles) {
+        List<String> mnsFiles = new ArrayList<>();
+        for (String fileName : cwdFiles) {
+            Blob blob = new Blob(fileName);
+            boolean tracked = currentCommit.getBlobs().containsKey(fileName);
+            boolean modified = !blob.getBlobId().equals(currentCommit.getBlobs().get(fileName));
+            boolean staged = stage.getAdditionBlobs().containsKey(fileName);
+            //In current commit, modified but not staged
+            if (tracked && modified && !staged) {
+                mnsFiles.add(fileName + " (modified)");
+                continue;
+            }
+            //Staged for addition but modified later
+            modified = !blob.getBlobId().equals(stage.getAdditionBlobs().get(fileName));
+            if (modified && staged) {
+                mnsFiles.add(fileName + " (moddified)");
+            }
+        }
+        //In current commit, deleted and not staged
+        for (String fileName : currentCommit.getBlobs().keySet()) {
+            boolean deleted = !cwdFiles.contains(fileName);
+            boolean staged = stage.getRemovalBlobs().contains(fileName);
+            if (deleted && !staged) {
+                mnsFiles.add(fileName + " (deleted)");
+            }
+        }
+        //Staged for addition but deleted
+        for (String fileName : stage.getAdditionBlobs().keySet()) {
+            boolean deleted = !cwdFiles.contains(fileName);
+            if (deleted) {
+                mnsFiles.add(fileName + " (deleted)");
+            }
+        }
+        Collections.sort(mnsFiles);
+        return mnsFiles;
+    }
+
+    //Helper method for status-getUntrackedFiles
+    private static List<String> getUntrackedFiles(Stage stage, Commit currentCommit, List<String> cwdFiles) {
+        List<String> untracked = new ArrayList<>();
+        for (String fileName : cwdFiles) {
+            boolean tracked = currentCommit.getBlobs().containsKey(fileName);
+            boolean staged = stage.getAdditionBlobs().containsKey(fileName);
+            //untracked
+            if (!tracked && !staged) {
+                untracked.add(fileName);
+            }
+        }
+        Collections.sort(untracked);
+        return untracked;
     }
 }
