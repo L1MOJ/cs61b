@@ -136,7 +136,7 @@ public class Repository {
             System.out.println("===");
             System.out.println("commit " + commitId);
             //Merging condition
-            if (commit.getParents().size() == 2) {
+            if (commit.getParents().get(1) != null) {
                 System.out.println("Merge: " + commit.getParents().get(0).substring(0,7) + " " + commit.getParents().get(1).substring(0,7));
             }
             System.out.println("Date: " + commit.getCommitTime());
