@@ -62,7 +62,8 @@ public class Repository {
         //Comparing to the current commit's file, if identical,return
         //Get current commit head->branch->commitId
         Commit currentCommit = Commit.getCommit(Branch.getCommitId(Head.getCurrentBranch()));
-        if (blobId.equals(currentCommit.getBlobs().get(fileName))) {
+//        blobId.equals(currentCommit.getBlobs().get(fileName))
+        if (currentCommit.getBlobs().containsKey(fileName)) {
             stage.removeAdditionBlob(fileName);
             stage.removeRemovalBlob(fileName);
             return;
