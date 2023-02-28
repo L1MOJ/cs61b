@@ -59,15 +59,17 @@ public class Repository {
         }
         Blob newBlob = new Blob(fileName);
         String blobId = newBlob.getBlobId();
-        //Staging an already staged file,rewrite it
-        if (stage.getAdditionBlobs().containsKey(fileName)) {
-            stage.removeAdditionBlob(fileName);
-        }
         //Comparing to the current commit's file, if identical,return
         //Get current commit head->branch->commitId
         Commit currentCommit = Commit.getCommit(Branch.getCommitId(Head.getCurrentBranch()));
         if (blobId.equals(currentCommit.getBlobs().get(fileName))) {
+            stage.removeAdditionBlob(fileName);
+            stage.removeRemovalBlob(fileName);
             return;
+        }
+        //Staging an already staged file,rewrite it
+        if (stage.getAdditionBlobs().containsKey(fileName)) {
+            stage.removeAdditionBlob(fileName);
         }
         //Cancel removal blob
         if (stage.getRemovalBlobs().contains(fileName)) {
