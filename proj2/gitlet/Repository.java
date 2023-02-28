@@ -448,6 +448,21 @@ public class Repository {
     //Helper method for concrete merging process
     private static boolean merging(Commit currentCommit,Commit mergedCommit,Commit splitCommit,Stage stage) {
         boolean isConflict = false;
+        HashMap<String,String> currentBlobs = currentCommit.getBlobs();
+        HashMap<String,String> mergedBlobs = mergedCommit.getBlobs();
+        HashMap<String,String> splitBlobs = splitCommit.getBlobs();
+        for (String fileName : mergedBlobs.keySet()) {
+            String currentId = currentBlobs.get(fileName);
+            String mergedId = mergedBlobs.get(fileName);
+            String splitId = splitBlobs.get(fileName);
+            //case1 and case2 only modified in one branch
+            if (splitId!=null && !currentId.equals(mergedId)) {
+                checkoutFile(mergedCommit.getCommitId(),fileName);
+                stage.getAdditionBlobs().put(fileName,mergedId);
+                continue;
+            }
+
+        }
     }
     //Helper method to get splitpoint
     private static String getSplitPoint(Commit currentCommit, Commit mergedCommit) {
