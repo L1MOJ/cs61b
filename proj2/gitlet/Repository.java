@@ -206,7 +206,6 @@ public class Repository {
             }
         }
         System.out.println();
-        System.out.println();
 
         System.out.println("=== Staged Files ===");
         for (Map.Entry<String,String> entry : stage.getAdditionBlobs().entrySet()) {
@@ -214,13 +213,11 @@ public class Repository {
             System.out.println(fileName);
         }
         System.out.println();
-        System.out.println();
 
         System.out.println("=== Removed Files ===");
         for (String fileName : stage.getRemovalBlobs()) {
             System.out.println(fileName);
         }
-        System.out.println();
         System.out.println();
 
         System.out.println("=== Modification Not Staged For Commit ===");
@@ -229,14 +226,12 @@ public class Repository {
             System.out.println(fileName);
         }
         System.out.println();
-        System.out.println();
 
         System.out.println("=== Untracked Files ===");
         List<String> untrackedFiles = getUntrackedFiles(stage, currentCommit, cwdFiles);
         for (String fileName : untrackedFiles) {
             System.out.println(fileName);
         }
-        System.out.println();
         System.out.println();
     }
     //Helper method for status-getMnsFiles
