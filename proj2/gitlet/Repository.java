@@ -81,10 +81,10 @@ public class Repository {
     public static void commit(String commitMessage) {
         //Get current commit
         String currentCommitId = Branch.getCommitId(Head.getCurrentBranch());
-        commit(commitMessage,currentCommitId);
+        commit(commitMessage,currentCommitId,null);
     }
     //Commit helper method
-    public static void commit(String commitMessage, String currentCommitId) {
+    public static void commit(String commitMessage, String currentCommitId,String mergedCommitId) {
         Stage stage = Stage.load();
         if (commitMessage.isEmpty()) {
             Utils.exitWithMessage("Please enter a commit message.");
@@ -92,7 +92,7 @@ public class Repository {
         if (stage.getAdditionBlobs().isEmpty() && stage.getRemovalBlobs().isEmpty()) {
             Utils.exitWithMessage("No changes to the commit");
         }
-        Commit newCommit = new Commit(commitMessage, currentCommitId);
+        Commit newCommit = new Commit(commitMessage, currentCommitId,mergedCommitId);
         //Add new blobs
         for (Map.Entry<String,String> entry : stage.getAdditionBlobs().entrySet()) {
             String fileName = entry.getKey();
@@ -443,26 +443,81 @@ public class Repository {
 
         Commit splitCommit = Commit.getCommit(splitPointCommitId);
         boolean isConflict = merging(currentCommit,mergedCommit,splitCommit,stage);
+        stage.save();
+        String commitMessage = "Merged " + branchName + " into" + Head.getCurrentBranch() + ".";
+        commit(commitMessage,currentCommitId,mergedCommitId);
+        if (isConflict) {
+            System.out.println("Encountered a merge conflict.");
+        }
     }
-
+    //Helper method to deal with merging conflicts
+    private static void conflictMerge(Stage stage,String fileName,String currentBlobId,String mergedBlobId) {
+        String currentContent = "";
+        String mergedContent = "";
+        if (currentBlobId != null) {
+            File currentBlob = Utils.join(Blob.BLOB_DIR,currentBlobId);
+            currentContent = Utils.readContentsAsString(currentBlob);
+        }
+        if (mergedBlobId != null) {
+            File mergedBlob = Utils.join(Blob.BLOB_DIR,mergedBlobId);
+            mergedContent = Utils.readContentsAsString(mergedBlob);
+        }
+        File conflictFile = Utils.join(CWD,fileName);
+        String conflictContent = "<<<<<<< HEAD\n" + currentContent +  "=======" + mergedContent + ">>>>>>>";
+        Blob newBlob = new Blob(fileName);
+        newBlob.save();
+        stage.getAdditionBlobs().put(fileName,newBlob.getBlobId());
+        Utils.writeContents(conflictFile,conflictContent);
+    }
     //Helper method for concrete merging process
     private static boolean merging(Commit currentCommit,Commit mergedCommit,Commit splitCommit,Stage stage) {
         boolean isConflict = false;
         HashMap<String,String> currentBlobs = currentCommit.getBlobs();
         HashMap<String,String> mergedBlobs = mergedCommit.getBlobs();
         HashMap<String,String> splitBlobs = splitCommit.getBlobs();
-        for (String fileName : mergedBlobs.keySet()) {
-            String currentId = currentBlobs.get(fileName);
-            String mergedId = mergedBlobs.get(fileName);
-            String splitId = splitBlobs.get(fileName);
-            //case1 and case2 only modified in one branch
-            if (splitId!=null && !currentId.equals(mergedId)) {
-                checkoutFile(mergedCommit.getCommitId(),fileName);
-                stage.getAdditionBlobs().put(fileName,mergedId);
-                continue;
+        for (String fileName : currentBlobs.keySet()) {
+            String currentBlobId = currentBlobs.get(fileName);
+            String mergedBlobId = mergedBlobs.get(fileName);
+            String splitBlobId = splitBlobs.get(fileName);
+            if (currentBlobId.equals(splitBlobId)) {
+                if (mergedBlobId == null) {
+                    //mergeRemoval();
+                    Utils.join(CWD,fileName).delete();
+                    stage.getRemovalBlobs().add(fileName);
+                    continue;
+                }
+                else {
+                    checkoutFile(mergedCommit.getCommitId(),fileName);
+                }
             }
-
+            else {
+                if (!splitBlobId.equals(mergedBlobId)) {
+                    //Conflict
+                    if (!mergedBlobId.equals(currentBlobId)) {
+                        conflictMerge(stage,fileName,currentBlobId,mergedBlobId);
+                        isConflict = true;
+                    }
+                }
+            }
         }
+        for (String fileName : mergedBlobs.keySet()) {
+            String currentBlobId = currentBlobs.get(fileName);
+            String mergedBlobId = mergedBlobs.get(fileName);
+            String splitBlobId = splitBlobs.get(fileName);
+            if (!mergedBlobId.equals(splitBlobId)) {
+                 if (splitBlobId == null) {
+//                     mergeAddition();
+                     checkoutFile(mergedCommit.getCommitId(),fileName);
+                     stage.getAdditionBlobs().put(fileName,mergedBlobId);
+                     continue;
+                 }
+                 else {
+                     conflictMerge(stage,fileName,currentBlobId,mergedBlobId);
+                     isConflict = true;
+                 }
+            }
+        }
+        return isConflict;
     }
     //Helper method to get splitpoint
     private static String getSplitPoint(Commit currentCommit, Commit mergedCommit) {

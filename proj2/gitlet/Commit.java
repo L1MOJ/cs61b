@@ -36,10 +36,11 @@ public class Commit implements Serializable {
     private HashMap<String,String> blobs;
     /** The CommitID. */
     private String commitId;
-    public Commit(String commitMessage,String currentCommitId) {
+    public Commit(String commitMessage,String currentCommitId,String mergedCommitId) {
         this.message = commitMessage;
         this.parents = new ArrayList<>();
         this.parents.add(currentCommitId);
+        this.parents.add(mergedCommitId);
         this.currentTime = new Date();
         this.commitTime = dateNormalization(currentTime);
         Commit currentCommit = Commit.getCommit(currentCommitId);
