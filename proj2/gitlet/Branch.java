@@ -13,7 +13,7 @@ public class Branch {
     public static String getCommitId(String branchName) {
         File branchFile = Utils.join(BRANCH_DIR,branchName);
         if (!branchFile.exists()) {
-            Utils.exitWithMessage("Branch not exists");
+            Utils.exitWithMessage("No such branch exists.");
         }
         return Utils.readContentsAsString(branchFile);
     }
