@@ -492,7 +492,6 @@ public class Repository {
             if (splitBlobId == null) {
                 if (mergedBlobId != null && !mergedBlobId.equals(currentBlobId)) {
                     conflictMerge(stage,fileName,currentBlobId,mergedBlobId);
-                    removeMergedBlobs(fileName,currentBlobs,mergedBlobs,splitBlobs);
                     isConflict = true;
                 }
             }
@@ -502,12 +501,10 @@ public class Repository {
                     if (splitBlobId.equals(currentBlobId)) {
                         Utils.join(CWD,fileName).delete();
                         stage.getRemovalBlobs().add(fileName);
-                        removeMergedBlobs(fileName,currentBlobs,mergedBlobs,splitBlobs);
                     }
                     //conflict
                     else {
                         conflictMerge(stage,fileName,currentBlobId,mergedBlobId);
-                        removeMergedBlobs(fileName,currentBlobs,mergedBlobs,splitBlobs);
                         isConflict = true;
                     }
                 }
@@ -515,7 +512,6 @@ public class Repository {
                     if (splitBlobId.equals(currentBlobId) && !splitBlobId.equals(mergedBlobId)) {
                         checkoutFile(mergedCommit.getCommitId(),fileName);
                         stage.getAdditionBlobs().put(fileName,mergedBlobId);
-                        removeMergedBlobs(fileName,currentBlobs,mergedBlobs,splitBlobs);
                     }
                 }
             }
@@ -524,14 +520,19 @@ public class Repository {
             String currentBlobId = currentBlobs.get(fileName);
             String mergedBlobId = mergedBlobs.get(fileName);
             String splitBlobId = splitBlobs.get(fileName);
-            if (splitBlobId == null) {
-                checkoutFile(mergedCommit.getCommitId(),fileName);
-                stage.getAdditionBlobs().put(fileName,mergedBlobId);
+            if (currentBlobId == null) {
+                continue;
             }
-            else if (!mergedBlobId.equals(splitBlobId))
-            {
-                conflictMerge(stage,fileName,currentBlobId,mergedBlobId);
-                isConflict = true;
+            else {
+                if (splitBlobId == null) {
+                    checkoutFile(mergedCommit.getCommitId(),fileName);
+                    stage.getAdditionBlobs().put(fileName,mergedBlobId);
+                }
+                else if (!mergedBlobId.equals(splitBlobId))
+                {
+                    conflictMerge(stage,fileName,currentBlobId,mergedBlobId);
+                    isConflict = true;
+                }
             }
         }
         return isConflict;
