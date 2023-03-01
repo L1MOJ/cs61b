@@ -62,8 +62,7 @@ public class Repository {
         //Comparing to the current commit's file, if identical,return
         //Get current commit head->branch->commitId
         Commit currentCommit = Commit.getCommit(Branch.getCommitId(Head.getCurrentBranch()));
-//        blobId.equals(currentCommit.getBlobs().get(fileName))
-        if (currentCommit.getBlobs().containsKey(fileName)) {
+        if (blobId.equals(currentCommit.getBlobs().get(fileName))) {
             stage.removeAdditionBlob(fileName);
             stage.removeRemovalBlob(fileName);
             return;
@@ -93,7 +92,7 @@ public class Repository {
             Utils.exitWithMessage("Please enter a commit message.");
         }
         if (stage.getAdditionBlobs().isEmpty() && stage.getRemovalBlobs().isEmpty()) {
-            Utils.exitWithMessage("No changes to the commit.");
+            Utils.exitWithMessage("No changes added to the commit.");
         }
         Commit newCommit = new Commit(commitMessage, currentCommitId,mergedCommitId);
         //Add new blobs
@@ -164,7 +163,7 @@ public class Repository {
             System.out.println("===");
             System.out.println("commit " + id);
             //Merging condition
-            if (commit.getParents().get(1) != null) {
+            if (commit.getParents().size() == 2 && commit.getParents().get(1) != null) {
                 System.out.println("Merge: " + commit.getParents().get(0).substring(0,7) + " " + commit.getParents().get(1).substring(0,7));
             }
             System.out.println("Date: " + commit.getCommitTime());
