@@ -27,7 +27,7 @@ public class Repository {
     /** The .gitlet directory. */
     public static final File GITLET_DIR = join(CWD, ".gitlet");
     /** The objects file under .gitlet storing blobs and commits. */
-    public static final File OBJ_DIR = join(GITLET_DIR,"objects");
+    public static final File OBJ_DIR = join(GITLET_DIR, "objects");
 
 
     /* TODO: fill in the rest of this class. */
@@ -65,15 +65,19 @@ public class Repository {
         if (blobId.equals(currentCommit.getBlobs().get(fileName))) {
             stage.removeAdditionBlob(fileName);
             stage.removeRemovalBlob(fileName);
+            stage.save();
+            return;
+        }
+        //Cancel removal blob
+        if (stage.getRemovalBlobs().contains(fileName)) {
+            stage.removeRemovalBlob(fileName);
+            stage.save();
+            newBlob.save();
             return;
         }
         //Staging an already staged file,rewrite it
         if (stage.getAdditionBlobs().containsKey(fileName)) {
             stage.removeAdditionBlob(fileName);
-        }
-        //Cancel removal blob
-        if (stage.getRemovalBlobs().contains(fileName)) {
-            stage.removeRemovalBlob(fileName);
         }
         stage.stageBlob(newBlob);
         stage.save();
@@ -99,7 +103,7 @@ public class Repository {
         for (Map.Entry<String, String> entry : stage.getAdditionBlobs().entrySet()) {
             String fileName = entry.getKey();
             String blobId = entry.getValue();
-            newCommit.getBlobs().put(fileName,blobId);
+            newCommit.getBlobs().put(fileName, blobId);
         }
         //Remove blobs
         for (String fileName : stage.getRemovalBlobs()) {
@@ -427,7 +431,7 @@ public class Repository {
             }
         }
         //Find split point
-        String splitPointCommitId = getSplitPoint(currentCommitId,mergedCommitId);
+        String splitPointCommitId = getSplitPoint(currentCommitId, mergedCommitId);
 
         if (splitPointCommitId.equals(mergedCommitId)) {
             Utils.exitWithMessage("Given branch is an ancestor of the current branch.");
@@ -435,7 +439,7 @@ public class Repository {
 
         if (splitPointCommitId.equals(currentCommitId)) {
             checkoutCommit(mergedCommit);
-            Branch.setCommitId(Head.getCurrentBranch(),mergedCommitId);
+            Branch.setCommitId(Head.getCurrentBranch(), mergedCommitId);
             Utils.exitWithMessage("Current branch fast-forward.");
         }
 
@@ -443,7 +447,7 @@ public class Repository {
         boolean isConflict = merging(currentCommit, mergedCommit, splitCommit,stage);
         stage.save();
         String commitMessage = "Merged " + branchName + " into " + Head.getCurrentBranch() + ".";
-        commit(commitMessage,currentCommitId, mergedCommitId);
+        commit(commitMessage, currentCommitId, mergedCommitId);
         if (isConflict) {
             System.out.println("Encountered a merge conflict.");
         }
@@ -466,7 +470,7 @@ public class Repository {
         else {
             mergedContent = "";
         }
-        File conflictFile = Utils.join(CWD,fileName);
+        File conflictFile = Utils.join(CWD, fileName);
         String conflictContent = "<<<<<<< HEAD\n" + currentContent +  "=======\n" + mergedContent + ">>>>>>>\n";
         Blob newBlob = new Blob(fileName);
         newBlob.save();

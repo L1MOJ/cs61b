@@ -34,7 +34,7 @@ public class Commit implements Serializable {
     private Date currentTime;
     private String commitTime;
     /** The blobs this Commit contains. */
-    private HashMap<String,String> blobs;
+    private HashMap<String, String> blobs;
     /** The CommitID. */
     private String commitId;
     public Commit(String commitMessage, String currentCommitId, String mergedCommitId) {
@@ -116,7 +116,7 @@ public class Commit implements Serializable {
     }
     //Save current commit to objects file
     public void save() {
-        File newCommit = Utils.join(COMMIT_DIR,this.commitId);
+        File newCommit = Utils.join(COMMIT_DIR, this.commitId);
         Utils.writeObject(newCommit, this);
     }
 }
