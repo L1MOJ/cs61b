@@ -428,7 +428,6 @@ public class Repository {
         }
         //Find split point
         String splitPointCommitId = getSplitPoint(currentCommit,mergedCommit);
-        System.out.println(splitPointCommitId);
 
         if (splitPointCommitId.equals(mergedCommitId)) {
             Utils.exitWithMessage("Given branch is an ancestor of the current branch.");
