@@ -8,8 +8,8 @@ import java.util.HashSet;
 public class Stage implements Serializable {
 
 //    public static final File ADDITION_DIR = Utils.join(Repository.STAGE_DIR,"addition");
-    public static final File STAGE_DIR = Utils.join(Repository.GITLET_DIR,"stage");
-    private HashMap<String,String> additionBlobs;
+    public static final File STAGE_DIR = Utils.join(Repository.GITLET_DIR, "stage");
+    private HashMap<String, String> additionBlobs;
     private HashSet<String> removalBlobs;
     public Stage() {
         additionBlobs = new HashMap<>();
@@ -48,9 +48,9 @@ public class Stage implements Serializable {
         removalBlobs.clear();
     }
     public void save() {
-        Utils.writeObject(STAGE_DIR,this);
+        Utils.writeObject(STAGE_DIR, this);
     }
     public static Stage load() {
-        return Utils.readObject(STAGE_DIR,Stage.class);
+        return Utils.readObject(STAGE_DIR, Stage.class);
     }
 }
