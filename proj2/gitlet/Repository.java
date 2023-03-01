@@ -324,8 +324,8 @@ public class Repository {
             Utils.exitWithMessage("File does not exist in that commit.");
         }
         File checkBlob = Utils.join(Blob.BLOB_DIR,Commit.getCommit(commitId).getBlobs().get(fileName));
-        Blob blob = Utils.readObject(checkBlob,Blob.class);
-        Utils.writeContents(Utils.join(CWD,fileName),blob.getFileContent());
+        String blobContent = Utils.readObject(checkBlob,String.class);
+        Utils.writeContents(Utils.join(CWD,fileName),blobContent);
     }
     //checkout branch helper method
     private static void checkoutBranch(String branchName) {
@@ -428,6 +428,7 @@ public class Repository {
         }
         //Find split point
         String splitPointCommitId = getSplitPoint(currentCommit,mergedCommit);
+        System.out.println(splitPointCommitId);
 
         if (splitPointCommitId.equals(mergedCommitId)) {
             Utils.exitWithMessage("Given branch is an ancestor of the current branch.");

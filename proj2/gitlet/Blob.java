@@ -30,9 +30,9 @@ public class Blob implements Serializable {
     public String getFileContent() {
         return fileContent;
     }
-    //Save blob in BLOB_DIR
+    //Save blobContent in BLOB_DIR
     public void save() {
         File newBlob = Utils.join(BLOB_DIR,blobId);
-        Utils.writeObject(newBlob,this);
+        Utils.writeObject(newBlob,this.fileContent);
     }
 }
