@@ -450,15 +450,21 @@ public class Repository {
     }
     //Helper method to deal with merging conflicts
     private static void conflictMerge(Stage stage,String fileName,String currentBlobId,String mergedBlobId) {
-        String currentContent = "";
-        String mergedContent = "";
+        String currentContent;
+        String mergedContent;
         if (currentBlobId != null) {
             File currentBlob = Utils.join(Blob.BLOB_DIR,currentBlobId);
             currentContent = Utils.readContentsAsString(currentBlob);
         }
+        else {
+            currentContent = "";
+        }
         if (mergedBlobId != null) {
             File mergedBlob = Utils.join(Blob.BLOB_DIR,mergedBlobId);
             mergedContent = Utils.readContentsAsString(mergedBlob);
+        }
+        else {
+            mergedContent = "";
         }
         File conflictFile = Utils.join(CWD,fileName);
         String conflictContent = "<<<<<<< HEAD\n" + currentContent +  "=======\n" + mergedContent + ">>>>>>>\n";
