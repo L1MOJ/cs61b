@@ -442,7 +442,7 @@ public class Repository {
         Commit splitCommit = Commit.getCommit(splitPointCommitId);
         boolean isConflict = merging(currentCommit,mergedCommit,splitCommit,stage);
         stage.save();
-        String commitMessage = "Merged " + branchName + " into" + Head.getCurrentBranch() + ".";
+        String commitMessage = "Merged " + branchName + " into " + Head.getCurrentBranch() + ".";
         commit(commitMessage,currentCommitId,mergedCommitId);
         if (isConflict) {
             System.out.println("Encountered a merge conflict.");
