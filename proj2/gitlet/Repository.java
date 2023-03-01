@@ -406,11 +406,11 @@ public class Repository {
         if (!stage.getAdditionBlobs().isEmpty() || !stage.getRemovalBlobs().isEmpty()) {
             Utils.exitWithMessage("You have uncommitted changes.");
         }
-        String mergedCommitId = Branch.getCommitId(branchName);
-        String currentCommitId = Branch.getCommitId(Head.getCurrentBranch());
-        if (mergedCommitId == null) {
+        if (!Utils.plainFilenamesIn(Branch.BRANCH_DIR).contains(branchName)) {
             Utils.exitWithMessage("A branch with that name does not exist.");
         }
+        String mergedCommitId = Branch.getCommitId(branchName);
+        String currentCommitId = Branch.getCommitId(Head.getCurrentBranch());
         Commit mergedCommit = Commit.getCommit(mergedCommitId);
         Commit currentCommit = Commit.getCommit(currentCommitId);
 
@@ -540,16 +540,20 @@ public class Repository {
         Deque<String> mergedStack = new LinkedList<>();
         Commit tempCommit = currentCommit;
         String tempCommitId = "";
-        //Won't push Init Commit Id but that's OK?
+        //Won't push Init Commit Id but that's OK?---No!! It's not OK
         while (!tempCommit.getParents().isEmpty()) {
             currentStack.push(tempCommit.getCommitId());
             tempCommit = Commit.getCommit(tempCommit.getParents().get(0));
         }
+        //Push Init in
+        currentStack.push(tempCommit.getCommitId());
         tempCommit = mergedCommit;
         while (!tempCommit.getParents().isEmpty()) {
             mergedStack.push(tempCommit.getCommitId());
             tempCommit = Commit.getCommit(tempCommit.getParents().get(0));
         }
+        //Push Init in
+        mergedStack.push(tempCommit.getCommitId());
         while (currentStack.peek().equals(mergedStack.peek())) {
             tempCommitId = currentStack.peek();
             currentStack.pop();
