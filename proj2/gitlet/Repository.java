@@ -492,6 +492,7 @@ public class Repository {
             if (splitBlobId == null) {
                 if (mergedBlobId != null && !mergedBlobId.equals(currentBlobId)) {
                     conflictMerge(stage,fileName,currentBlobId,mergedBlobId);
+                    System.out.println(fileName);
                     isConflict = true;
                 }
             }
@@ -505,6 +506,7 @@ public class Repository {
                     //conflict
                     else {
                         conflictMerge(stage,fileName,currentBlobId,mergedBlobId);
+                        System.out.println(fileName);
                         isConflict = true;
                     }
                 }
@@ -530,6 +532,7 @@ public class Repository {
             else if (!mergedBlobId.equals(splitBlobId))
             {
                 conflictMerge(stage,fileName,currentBlobId,mergedBlobId);
+                System.out.println(fileName);
                 isConflict = true;
             }
         }
