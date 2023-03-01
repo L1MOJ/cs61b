@@ -523,16 +523,14 @@ public class Repository {
             if (currentBlobId == null) {
                 continue;
             }
-            else {
-                if (splitBlobId == null) {
-                    checkoutFile(mergedCommit.getCommitId(),fileName);
-                    stage.getAdditionBlobs().put(fileName,mergedBlobId);
-                }
-                else if (!mergedBlobId.equals(splitBlobId))
-                {
-                    conflictMerge(stage,fileName,currentBlobId,mergedBlobId);
-                    isConflict = true;
-                }
+            if (splitBlobId == null) {
+                checkoutFile(mergedCommit.getCommitId(),fileName);
+                stage.getAdditionBlobs().put(fileName,mergedBlobId);
+            }
+            else if (!mergedBlobId.equals(splitBlobId))
+            {
+                conflictMerge(stage,fileName,currentBlobId,mergedBlobId);
+                isConflict = true;
             }
         }
         return isConflict;
