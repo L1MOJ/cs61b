@@ -461,7 +461,7 @@ public class Repository {
             mergedContent = Utils.readContentsAsString(mergedBlob);
         }
         File conflictFile = Utils.join(CWD,fileName);
-        String conflictContent = "<<<<<<< HEAD\n" + currentContent +  "=======" + mergedContent + ">>>>>>>";
+        String conflictContent = "<<<<<<< HEAD\n" + currentContent +  "=======\n" + mergedContent + ">>>>>>>\n";
         Blob newBlob = new Blob(fileName);
         newBlob.save();
         stage.getAdditionBlobs().put(fileName,newBlob.getBlobId());
