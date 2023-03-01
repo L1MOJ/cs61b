@@ -2,8 +2,7 @@ package gitlet;
 
 // TODO: any imports you need here
 
-import java.io.File;
-import java.io.Serializable;
+import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -58,7 +57,20 @@ public class Commit implements Serializable {
         this.firstParentId = null;
         this.secondParentId = null;
         this.blobs = new HashMap<>();
-        this.commitId = Utils.sha1(commitTime,message,firstParentId,secondParentId,blobs.toString());
+        this.commitId = calcHash();
+    }
+    private String calcHash() {
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        ObjectOutputStream oos = null;
+        try {
+            oos = new ObjectOutputStream(bos);
+            oos.writeObject(this);
+            oos.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.exit(0);
+        }
+        return Utils.sha1((Object) bos.toByteArray());
     }
     //Get commit by Id
     public static Commit getCommit(String commitId) {
@@ -109,7 +121,7 @@ public class Commit implements Serializable {
         return commitId;
     }
     public void setCommitId() {
-        this.commitId = Utils.sha1(this.commitTime,this.message,this.firstParentId,this.secondParentId,this.blobs.toString());
+        this.commitId = calcHash();
     }
     public String getFirstParentId() {
         return firstParentId;
