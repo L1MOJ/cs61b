@@ -386,6 +386,7 @@ public class Repository {
             if (branchName.equals(branch)) {
                 File branchFile = Utils.join(Branch.BRANCH_DIR,branchName);
                 branchFile.delete();
+                return;
             }
         }
         Utils.exitWithMessage("A branch with that name does not exist.");
