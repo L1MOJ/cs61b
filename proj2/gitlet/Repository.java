@@ -427,6 +427,7 @@ public class Repository {
         }
         //Find split point
         String splitPointCommitId = getSplitPoint(currentCommit,mergedCommit);
+        System.out.println(Commit.getCommit(splitPointCommitId).getMessage());
 
         if (splitPointCommitId.equals(mergedCommitId)) {
             Utils.exitWithMessage("Given branch is an ancestor of the current branch.");
@@ -493,6 +494,9 @@ public class Repository {
                 if (mergedBlobId != null && !mergedBlobId.equals(currentBlobId)) {
                     conflictMerge(stage,fileName,currentBlobId,mergedBlobId);
                     System.out.println(fileName);
+                    System.out.println("currentId " + currentBlobId);
+                    System.out.println("mergedId " + mergedBlobId);
+                    System.out.println("splitId " + splitBlobId);
                     isConflict = true;
                 }
             }
