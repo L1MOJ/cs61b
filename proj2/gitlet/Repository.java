@@ -293,7 +293,7 @@ public class Repository {
         //checkout --[file name]
         if (args.length == 3) {
             if (!args[1].equals("--")) {
-                Utils.exitWithMessage("Invalid command.");
+                Utils.exitWithMessage("Incorrect operands.");
             }
             String fileName = args[2];
             checkoutFile(Branch.getCommitId(Head.getCurrentBranch()), fileName);
@@ -301,7 +301,7 @@ public class Repository {
         //checkout [commit id] --[file name]
         if (args.length == 4) {
             if (!args[2].equals("--")) {
-                Utils.exitWithMessage("Invalid command.");
+                Utils.exitWithMessage("Incorrect operands.");
             }
             String fileName = args[3];
             String commitId = args[1];
@@ -375,7 +375,7 @@ public class Repository {
             Utils.exitWithMessage("A branch with that name already exists");
         }
         Branch.setCommitId(branchName,Branch.getCommitId(Head.getCurrentBranch()));
-        Head.setCurrentBranch(branchName);
+//        Head.setCurrentBranch(branchName);
     }
 
     public static void rmBranch(String branchName) {
