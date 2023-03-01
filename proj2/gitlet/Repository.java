@@ -324,8 +324,7 @@ public class Repository {
             Utils.exitWithMessage("File does not exist in that commit.");
         }
         File checkBlob = Utils.join(Blob.BLOB_DIR,Commit.getCommit(commitId).getBlobs().get(fileName));
-        byte[] blobContent = Utils.readContents(checkBlob);
-        Utils.writeContents(Utils.join(CWD,fileName),blobContent);
+        String blobContent = Utils.readObject(checkBlob,String.class);        Utils.writeContents(Utils.join(CWD,fileName),blobContent);
     }
     //checkout branch helper method
     private static void checkoutBranch(String branchName) {

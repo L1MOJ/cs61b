@@ -11,11 +11,11 @@ public class Blob implements Serializable {
     //
     private String fileName;
     //Contents in the file.
-    private byte[] fileContent;
+    private String fileContent;
 
     public Blob(String fileName) {
         this.fileName = fileName;
-        this.fileContent = Utils.readContents(Utils.join(Repository.CWD,fileName));
+        this.fileContent = Utils.readContentsAsString(Utils.join(Repository.CWD,fileName));
         this.blobId = Utils.sha1(this.fileContent);
     }
 
@@ -27,7 +27,7 @@ public class Blob implements Serializable {
         return fileName;
     }
 
-    public byte[] getFileContent() {
+    public String getFileContent() {
         return fileContent;
     }
     //Save blobContent in BLOB_DIR
