@@ -366,7 +366,7 @@ public class Repository {
         }
         //Update files trakced by B
         for (String fileName : commit.getBlobs().keySet()) {
-            checkoutFile(commit.getCommitId(), fileName);
+            checkoutFile(commit.getCommitId(),fileName);
         }
         //Clear stage
         Stage stage = Stage.load();
