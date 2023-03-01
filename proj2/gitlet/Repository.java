@@ -467,6 +467,12 @@ public class Repository {
         stage.getAdditionBlobs().put(fileName,newBlob.getBlobId());
         Utils.writeContents(conflictFile,conflictContent);
     }
+    //Remove merged blobs
+    private static void removeMergedBlobs(String fileName,HashMap<String,String> currentBlobs,HashMap<String,String> mergedBlobs,HashMap<String,String> splitBlobs) {
+        currentBlobs.remove(fileName);
+        mergedBlobs.remove(fileName);
+        splitBlobs.remove(fileName);
+    }
     //Helper method for concrete merging process
     private static boolean merging(Commit currentCommit,Commit mergedCommit,Commit splitCommit,Stage stage) {
         boolean isConflict = false;
@@ -477,23 +483,31 @@ public class Repository {
             String currentBlobId = currentBlobs.get(fileName);
             String mergedBlobId = mergedBlobs.get(fileName);
             String splitBlobId = splitBlobs.get(fileName);
-            if (!Objects.equals(currentBlobId,splitBlobId)) {
-                if (mergedBlobId == null) {
-                    //mergeRemoval();
-                    Utils.join(CWD,fileName).delete();
-                    stage.getRemovalBlobs().add(fileName);
-                    continue;
-                }
-                else {
-                    checkoutFile(mergedCommit.getCommitId(),fileName);
+            // X a !a     Xaa  XaX
+            if (splitBlobId == null) {
+                if (mergedBlobId != null && !mergedBlobId.equals(currentBlobId)) {
+                    conflictMerge(stage,fileName,currentBlobId,mergedBlobId);
+                    removeMergedBlobs(fileName,currentBlobs,mergedBlobs,splitBlobs);
+                    isConflict = true;
                 }
             }
+            //a a X->remove /a a a ->stay /a a !a->merge /!a a X->conf  /!a a a->stay /!a a !a->stay
             else {
-                if (!Objects.equals(splitBlobId, mergedBlobId)) {
-                    //Conflict
-                    if (!Objects.equals(mergedBlobId,currentBlobId)) {
+                if (mergedBlobId == null) {
+                    if (splitBlobId.equals(currentBlobId)) {
+                        Utils.join(CWD,fileName).delete();
+                        stage.getRemovalBlobs().add(fileName);
+                    }
+                    //conflict
+                    else {
                         conflictMerge(stage,fileName,currentBlobId,mergedBlobId);
                         isConflict = true;
+                    }
+                }
+                else {
+                    if (splitBlobId.equals(currentBlobId) && !splitBlobId.equals(mergedBlobId)) {
+                        checkoutFile(mergedCommit.getCommitId(),fileName);
+                        stage.getAdditionBlobs().put(fileName,mergedBlobId);
                     }
                 }
             }
@@ -502,17 +516,14 @@ public class Repository {
             String currentBlobId = currentBlobs.get(fileName);
             String mergedBlobId = mergedBlobs.get(fileName);
             String splitBlobId = splitBlobs.get(fileName);
-            if (!Objects.equals(mergedBlobId,splitBlobId)) {
-                 if (splitBlobId == null) {
-//                     mergeAddition();
-                     checkoutFile(mergedCommit.getCommitId(),fileName);
-                     stage.getAdditionBlobs().put(fileName,mergedBlobId);
-                     continue;
-                 }
-                 else {
-                     conflictMerge(stage,fileName,currentBlobId,mergedBlobId);
-                     isConflict = true;
-                 }
+            if (splitBlobId == null) {
+                checkoutFile(mergedCommit.getCommitId(),fileName);
+                stage.getAdditionBlobs().put(fileName,mergedBlobId);
+            }
+            else if (!mergedBlobId.equals(splitBlobId))
+            {
+                conflictMerge(stage,fileName,currentBlobId,mergedBlobId);
+                isConflict = true;
             }
         }
         return isConflict;
