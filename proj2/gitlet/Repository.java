@@ -427,7 +427,6 @@ public class Repository {
         }
         //Find split point
         String splitPointCommitId = getSplitPoint(currentCommit,mergedCommit);
-        System.out.println(Commit.getCommit(splitPointCommitId).getMessage());
 
         if (splitPointCommitId.equals(mergedCommitId)) {
             Utils.exitWithMessage("Given branch is an ancestor of the current branch.");
@@ -493,10 +492,7 @@ public class Repository {
             if (splitBlobId == null) {
                 if (mergedBlobId != null && !mergedBlobId.equals(currentBlobId)) {
                     conflictMerge(stage,fileName,currentBlobId,mergedBlobId);
-                    System.out.println(fileName);
-                    System.out.println("currentId " + currentBlobId);
-                    System.out.println("mergedId " + mergedBlobId);
-                    System.out.println("splitId " + splitBlobId);
+//                    System.out.println(fileName);
                     isConflict = true;
                 }
             }
@@ -510,7 +506,7 @@ public class Repository {
                     //conflict
                     else {
                         conflictMerge(stage,fileName,currentBlobId,mergedBlobId);
-                        System.out.println(fileName);
+//                        System.out.println(fileName);
                         isConflict = true;
                     }
                 }
@@ -526,7 +522,8 @@ public class Repository {
             String currentBlobId = currentBlobs.get(fileName);
             String mergedBlobId = mergedBlobs.get(fileName);
             String splitBlobId = splitBlobs.get(fileName);
-            if (currentBlobId == null) {
+            //Already done
+            if (currentBlobId != null) {
                 continue;
             }
             if (splitBlobId == null) {
@@ -536,7 +533,7 @@ public class Repository {
             else if (!mergedBlobId.equals(splitBlobId))
             {
                 conflictMerge(stage,fileName,currentBlobId,mergedBlobId);
-                System.out.println(fileName);
+//                System.out.println(fileName);
                 isConflict = true;
             }
         }
