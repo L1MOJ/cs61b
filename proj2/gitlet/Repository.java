@@ -134,17 +134,17 @@ public class Repository {
     public static void log() {
         String commitId = Branch.getCommitId(Head.getCurrentBranch());
         Commit commit = Commit.getCommit(commitId);
-        while (!commit.getParents().isEmpty()) {
+        while (commit.getFirstParentId() != null || commit.getSecondParentId() != null) {
             System.out.println("===");
             System.out.println("commit " + commitId);
             //Merging condition
-            if (commit.getParents().get(1) != null) {
-                System.out.println("Merge: " + commit.getParents().get(0).substring(0,7) + " " + commit.getParents().get(1).substring(0,7));
+            if (commit.getSecondParentId() != null) {
+                System.out.println("Merge: " + commit.getFirstParentId().substring(0,7) + " " + commit.getSecondParentId().substring(0,7));
             }
             System.out.println("Date: " + commit.getCommitTime());
             System.out.println(commit.getMessage());
             System.out.println();
-            commitId = commit.getParents().get(0);
+            commitId = commit.getFirstParentId();
             commit = Commit.getCommit(commitId);
         }
         //Initial Commit
@@ -163,8 +163,8 @@ public class Repository {
             System.out.println("===");
             System.out.println("commit " + id);
             //Merging condition
-            if (commit.getParents().size() == 2 && commit.getParents().get(1) != null) {
-                System.out.println("Merge: " + commit.getParents().get(0).substring(0,7) + " " + commit.getParents().get(1).substring(0,7));
+            if (commit.getSecondParentId() != null) {
+                System.out.println("Merge: " + commit.getFirstParentId().substring(0,7) + " " + commit.getSecondParentId().substring(0,7));
             }
             System.out.println("Date: " + commit.getCommitTime());
             System.out.println(commit.getMessage());
@@ -426,7 +426,7 @@ public class Repository {
             }
         }
         //Find split point
-        String splitPointCommitId = getSplitPoint(currentCommit,mergedCommit);
+        String splitPointCommitId = getSplitPoint(currentCommitId,mergedCommitId);
 
         if (splitPointCommitId.equals(mergedCommitId)) {
             Utils.exitWithMessage("Given branch is an ancestor of the current branch.");
@@ -540,30 +540,37 @@ public class Repository {
         return isConflict;
     }
     //Helper method to get splitpoint
-    private static String getSplitPoint(Commit currentCommit, Commit mergedCommit) {
-        Deque<String> currentStack = new LinkedList<>();
-        Deque<String> mergedStack = new LinkedList<>();
-        Commit tempCommit = currentCommit;
-        String tempCommitId = "";
-        //Won't push Init Commit Id but that's OK?---No!! It's not OK
-        while (!tempCommit.getParents().isEmpty()) {
-            currentStack.push(tempCommit.getCommitId());
-            tempCommit = Commit.getCommit(tempCommit.getParents().get(0));
+    private static String getSplitPoint(String currentCommitId, String mergedCommitId) {
+        Set<String> commitSet = new HashSet<>();
+        Queue<String> bfsQueue = new ArrayDeque<>();
+        bfsQueue.add(currentCommitId);
+        while (!bfsQueue.isEmpty()) {
+            String commitId = bfsQueue.remove();
+            Commit commit = Commit.getCommit(commitId);
+            commitSet.add(commitId);
+            if (commit.getFirstParentId() != null) {
+                bfsQueue.add(commit.getFirstParentId());
+            }
+            if (commit.getSecondParentId() != null) {
+                bfsQueue.add(commit.getSecondParentId());
+            }
         }
-        //Push Init in
-        currentStack.push(tempCommit.getCommitId());
-        tempCommit = mergedCommit;
-        while (!tempCommit.getParents().isEmpty()) {
-            mergedStack.push(tempCommit.getCommitId());
-            tempCommit = Commit.getCommit(tempCommit.getParents().get(0));
+
+        bfsQueue.add(mergedCommitId);
+        while (!bfsQueue.isEmpty()) {
+            String commitId = bfsQueue.remove();
+            Commit commit = Commit.getCommit(commitId);
+            if (commitSet.contains(commitId)) {
+                return commitId;
+            }
+            if (commit.getFirstParentId() != null) {
+                bfsQueue.add(commit.getFirstParentId());
+            }
+            if (commit.getSecondParentId() != null) {
+                bfsQueue.add(commit.getSecondParentId());
+            }
         }
-        //Push Init in
-        mergedStack.push(tempCommit.getCommitId());
-        while (currentStack.peek().equals(mergedStack.peek())) {
-            tempCommitId = currentStack.peek();
-            currentStack.pop();
-            mergedStack.pop();
-        }
-        return tempCommitId;
+
+        return null;
     }
 }

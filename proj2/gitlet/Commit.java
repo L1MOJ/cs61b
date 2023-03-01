@@ -28,7 +28,11 @@ public class Commit implements Serializable {
     /** The message of this Commit. */
     private String message;
     /** The parents(sha1 code) of this Commit. */
-    private List<String> parents;
+//    private List<String> parents;
+    private String firstParentId;
+    private String secondParentId;
+
+
     /** The Commit Date and its String format. */
     private Date currentTime;
     private String commitTime;
@@ -38,9 +42,8 @@ public class Commit implements Serializable {
     private String commitId;
     public Commit(String commitMessage,String currentCommitId,String mergedCommitId) {
         this.message = commitMessage;
-        this.parents = new ArrayList<>();
-        this.parents.add(currentCommitId);
-        this.parents.add(mergedCommitId);
+        this.firstParentId = currentCommitId;
+        this.secondParentId = mergedCommitId;
         this.currentTime = new Date();
         this.commitTime = dateNormalization(currentTime);
         Commit currentCommit = Commit.getCommit(currentCommitId);
@@ -52,9 +55,10 @@ public class Commit implements Serializable {
         this.message = "initial commit";
         this.currentTime = new Date(0);
         this.commitTime = dateNormalization(currentTime);
-        this.parents = new ArrayList<>();
+        this.firstParentId = null;
+        this.secondParentId = null;
         this.blobs = new HashMap<>();
-        this.commitId = Utils.sha1(commitTime,message,parents.toString(),blobs.toString());
+        this.commitId = Utils.sha1(commitTime,message,firstParentId,secondParentId,blobs.toString());
     }
     //Get commit by Id
     public static Commit getCommit(String commitId) {
@@ -92,13 +96,6 @@ public class Commit implements Serializable {
         this.message = message;
     }
 
-    public List<String> getParents() {
-        return parents;
-    }
-
-    public void setParents(List<String> parents) {
-        this.parents = parents;
-    }
 
     public HashMap<String, String> getBlobs() {
         return blobs;
@@ -112,8 +109,16 @@ public class Commit implements Serializable {
         return commitId;
     }
     public void setCommitId() {
-        this.commitId = Utils.sha1(this.commitTime,this.message,this.parents.toString(),this.blobs.toString());
+        this.commitId = Utils.sha1(this.commitTime,this.message,this.firstParentId,this.secondParentId,this.blobs.toString());
     }
+    public String getFirstParentId() {
+        return firstParentId;
+    }
+
+    public String getSecondParentId() {
+        return secondParentId;
+    }
+
 
     //Save current commit to objects file
     public void save() {
